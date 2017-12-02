@@ -6,10 +6,33 @@ I'm also taking the opportunity to learn more about using a mono repo to host al
 
 Nwrl/Nx
 
-Create the repo
+## Created the repo
 
 ```
 curl -fsSL https://raw.githubusercontent.com/nrwl/nx/master/packages/install/install.sh | bash -s myproject
 ```
 
+## Created first app
+
+```
+ng g app hello-world
+```
+
+
+## Deploy using aerobatic
+
+Created the areobatic project
+
+```
+aero create --name deploy
+```
+
+Deployed the project:
+
+```
+ng build  --base-href . --app hello-world
+ng build  --base-href . --app hello-world2
+cp index.html dist
+aero deploy --directory dist
+```
 
