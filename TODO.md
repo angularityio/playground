@@ -1,13 +1,14 @@
 TODO
 
 [ ] Flesh out various section
-  * Basic - forms, HttpClient, Interceptors. Typescript, Immutable, RxJs
+  * Basic - forms, binding, life cycle, HttpClient, Interceptors. Typescript, Immutable, RxJs
   * Advanced - Dynamic components, factories.
   * API - GraphQL, Rest, JsonAPI.
+  * Server Less - AWS App Sync, Scaphold.io, ..
   * Blog - Related to specific blog entries.
   * Apps - Tiny useful apps that can be deployed standalone too.
   * Third Party - Demos third party components and libraries.
-  * Angularity Components - Have a few idea of some components to share.
+  * Angularity Components - Dynamic Forms, Pivot Component.
   * Examples - Various demos that didn't got promoted to a published blog.
 
 [ ] Visual
@@ -21,6 +22,7 @@ TODO
   [ ] For angularity's home page? http://preview.themeforest.net/item/zephyr-material-design-theme/full_screen_preview/9865647?_ga=2.212912852.1103909378.1512176701-539230990.1512176701
 
 [ ] Add first section.
+  [ ] HttpClient testing
   [ ] High level form components. Check if I can start with pn-forms
   [ ] Dynamic table / record generation
   [ ] Decide on component prefix (ay?, just a, a-forms, ay-forms??)
@@ -36,4 +38,5 @@ TODO
     [ ] consider deploying via docker.
 
 [ ] Components
-  [ ] Pivot component
+  [ ] Pivot component (ay-pivot)
+  [ ] ay-forms
