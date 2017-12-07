@@ -21,8 +21,19 @@ TODO
   or https://themeforest.net/search/material%20design?utf8=%E2%9C%93
   [ ] For angularity's home page? http://preview.themeforest.net/item/zephyr-material-design-theme/full_screen_preview/9865647?_ga=2.212912852.1103909378.1512176701-539230990.1512176701
 
+[ ] HttpClient testing
+  [ ] Figure out API (pick one)
+    [ ] Could use the old Recipe API
+    [ ] Could just point to a service (flicker search)
+      https://github.com/toddmotto/public-apis#finance (by https://toddmotto.com/)
+      https://any-api.com/
+    [ ] Heroku Rails/Postgress
+    [ ] NestJS / Postgress / TypeORM
+      https://github.com/typeorm/typeorm
+      https://docs.nestjs.com/recipes/sql-typeorm
+
 [ ] Add first section.
-  [ ] HttpClient testing
+  [started] HttpClient testing
   [ ] High level form components. Check if I can start with pn-forms
   [ ] Dynamic table / record generation
   [ ] Decide on component prefix (ay?, just a, a-forms, ay-forms??)
@@ -40,3 +51,7 @@ TODO
 [ ] Components
   [ ] Pivot component (ay-pivot)
   [ ] ay-forms
+
+[ ] Server less
+  [ ] Checkout AWS App Sync
+  [ ] https://docs.microsoft.com/en-us/azure/cosmos-db/introduction
