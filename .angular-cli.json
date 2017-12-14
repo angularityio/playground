@@ -7,6 +7,31 @@
   },
   "apps": [
     {
+      "name": "example-001-httpclient-testing",
+      "root": "apps/example-001-httpclient-testing/src",
+      "outDir": "dist/apps/example-001-httpclient-testing",
+      "assets": [
+        "assets",
+        "favicon.ico"
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "../../../test.js",
+      "tsconfig": "../../../tsconfig.app.json",
+      "testTsconfig": "../../../tsconfig.spec.json",
+      "prefix": "app",
+      "styles": [
+        "styles.scss"
+      ],
+      "scripts": [],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
+      }
+    },
+    {
       "name": "hello-world",
       "root": "apps/hello-world/src",
       "outDir": "dist/apps/hello-world",
@@ -87,7 +112,7 @@
         "lib"
       ]
     },
-    "styleExt": "css",
+    "styleExt": "scss",
     "component": {}
   }
 }
