@@ -90,11 +90,6 @@ heroku git:remote -a rails-rest
 git push heroku master --force
 rm -fr .git
 ```
-The first time you'll need to create the data migration on Heroku. The database is automatically crated for you.
-
-```
-$ heroku run rake db:migrate --app=rails-rest
-```
 
 TODO: investigate using git subtree.
 
@@ -102,3 +97,17 @@ TODO: investigate using git subtree.
 cd ../..
 git subtree push --prefix 01_rails_rest heroku master
 ```
+
+The first time you'll need to create the data migration on Heroku. The database is automatically crated for you.
+
+```
+$ heroku run rake db:migrate --app=rails-rest
+```
+
+Add data to the heroku database:
+
+```
+$ heroku run rails console --app=rails-rest
+Post.create(title: 'Testing HttpClient', content: 'A long description...')
+```
+

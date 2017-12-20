@@ -1,5 +1,35 @@
 TODO
 
+[ ] HttpClient testing
+  [x] implement CRUD service against
+      https://rails-rest.herokuapp.com/posts/1.json
+  [x] write CRUD spec
+  [ ] create app with list and details, New and Save button.
+      clear button?
+          [ ] create list component
+          [ ] create record component
+  [ ] 100% test coverage
+      [x] setup wallaby
+          see https://github.com/wallabyjs/public/issues/1347 for making it work with Nx.
+      [ ] wallaby more dynamic (did hard code project in wallabyjs)
+      [ ] test runner styling https://www.npmjs.com/package/karma-htmlfile-reporter
+  [ ] Find CI server and add build badge to README.
+      [ ] buddy.works
+  [ ] Make first video walking through tests
+      * Fixture (list, update, create, delete)
+      * HttpClientTestModule <- all the magic
+      * Simple index, create, update, delete.
+      * Update method (PUT)
+      * Component test - doesn't need to retest, assume data is there.
+  [ ] Use default theme or https://www.materialpalette.com/ ?
+  [ ] Video 2 show how to test headers and interceptors?
+      * Headers
+      * Interceptor (Auth?)
+  [ ] Make a shareable header for all examples
+
+
+
+
 [ ] Flesh out various section
   * Basic - forms, binding, life cycle, HttpClient, Interceptors. Typescript, Immutable, RxJs
   * Advanced - Dynamic components, factories.
@@ -21,17 +51,6 @@ TODO
   or https://themeforest.net/search/material%20design?utf8=%E2%9C%93
   [ ] For angularity's home page? http://preview.themeforest.net/item/zephyr-material-design-theme/full_screen_preview/9865647?_ga=2.212912852.1103909378.1512176701-539230990.1512176701
 
-[ ] HttpClient testing
-  [ ] Figure out API (pick one)
-    [ ] Could use the old Recipe API
-    [ ] Could just point to a service (flicker search)
-      https://github.com/toddmotto/public-apis#finance (by https://toddmotto.com/)
-      https://any-api.com/
-    [ ] Heroku Rails/Postgress
-    [ ] NestJS / Postgress / TypeORM
-      https://github.com/typeorm/typeorm
-      https://docs.nestjs.com/recipes/sql-typeorm
-
 [ ] Add first section.
   [started] HttpClient testing
   [ ] High level form components. Check if I can start with pn-forms
@@ -44,9 +63,22 @@ TODO
 [ ] Define build/ci/cd pipeline
   [x] Aerobatic. Seems to work well.
   [ ] buddy.works
-    [ ] fix karma issue
+    [x] fix karma issue
     [ ] setup test pipeline with auto deploy via aerobatic.
     [ ] consider deploying via docker.
+
+[ ] Artifacts for each project
+  [ ] a running app (deployed via areobatic via appkey or use netlify)
+  [ ] the specs output
+  [ ] the test coverage output
+  [ ] the static source code (it's public on github)
+  [ ] running/editable code? stackblitz, codepen, jsfiddle, jsbin, plunkr
+
+[ ] Blog
+  [ ] embed video
+  [ ] embed src code
+  [ ] medium?
+  [ ] markdown...README of each subproject could be the content.
 
 [ ] Components
   [ ] Pivot component (ay-pivot)
