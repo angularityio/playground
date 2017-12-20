@@ -7,29 +7,32 @@ import { Observable } from 'rxjs/Observable';
 export class PostsServiceService {
   constructor(private http: HttpClient) {}
 
-  getPosts(): Observable<any> {
-    console.log(`******${environment.api}/posts`)
+  getAll(): Observable<any> {
     return this.http.get(`${environment.api}/posts`);
   }
 
-  getPost(id) {
-    this.http.get(`${environment.api}/posts/${id}.json`);
+  get(id): Observable<any>  {
+    return this.http.get(`${environment.api}/posts/${id}.json`);
   }
 
-  savePost(post) {
-
+  save(post): Observable<any> {
+    if (post.id) {
+      return this.update(post);
+    } else {
+      return this.create(post);
+    }
   }
 
-  createPost(post) {
-
+  create(post): Observable<any> {
+    return this.http.post(`${environment.api}/posts`, post);
   }
 
-  updatePost(post) {
-
+  update(post): Observable<any> {
+    return this.http.put(`${environment.api}/posts/${post.id}.json`, post);
   }
 
-  deletePost(post) {
-
+  delete(post): Observable<any> {
+    return this.http.delete(`${environment.api}/posts/${post.id}.json`);
   }
 
 }
