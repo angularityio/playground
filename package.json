@@ -15,6 +15,7 @@
     "test3": "ng test --app example-001-httpclient-testing --watch false --code-coverage",
     "test:all": "npm run test1 && npm run test2 && npm run test3",
     "test": "ng test",
+    "deploy": "aero deploy --directory dist",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "format": "prettier --single-quote --print-width 120 --write \"{apps,libs}/**/*.ts\""
@@ -51,6 +52,7 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~6.0.60",
     "codelyzer": "~3.1.1",
+    "electron": "^1.7.10",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
@@ -63,6 +65,9 @@
     "protractor": "~5.1.2",
     "ts-node": "~3.2.0",
     "tslint": "~5.3.2",
-    "typescript": "2.5.3"
+    "typescript": "2.5.3",
+    "wallaby-webpack": "0.0.38",
+    "angular2-template-loader": "0.6.2"
+
   }
 }
