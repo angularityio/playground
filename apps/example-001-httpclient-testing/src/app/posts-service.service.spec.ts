@@ -109,6 +109,7 @@ describe('PostsServiceService', () => {
 
   // TODO
   // 1) flush with status i.e. 422
+  //   httpMock.expectOne(`${environment.api}/reports?policy_num=3232325`).flush({}, {status: 422, statusText: 'Boom'});
   // 2) Error handling i.e. network error
   //    call.error(
   //      new ErrorEvent(''), {
