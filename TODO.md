@@ -1,14 +1,21 @@
 TODO
 
+See https://trello.com/c/GYWNdeaL/1-httpclient-testing
+
 [ ] HttpClient testing
   [x] implement CRUD service against
       https://rails-rest.herokuapp.com/posts/1.json
   [x] write CRUD spec
-  [ ] create app with list and details, New and Save button.
+  [x] create app with list and details, New and Save button.
       clear button?
-          [ ] create list component
-          [ ] create record component
-  [ ] 100% test coverage
+          [x] create list component
+          [x] create record component
+  [ ] Server add comments (/posts/1/comments)
+    [ ] Nested resource
+    [ ] Create Gist to show how to create the server
+    [ ] Explain about CORS
+  [ ] Show examples of mergeMap (get post/1 and post/1/comments)
+  [ ] Other examples.  [ ] 100% test coverage
       [x] setup wallaby
           see https://github.com/wallabyjs/public/issues/1347 for making it work with Nx.
       [ ] wallaby more dynamic (did hard code project in wallabyjs)
