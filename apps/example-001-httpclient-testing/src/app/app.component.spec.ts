@@ -11,6 +11,10 @@ import {
   MatButtonModule
 } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MomentModule } from 'angular2-moment';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PostsServiceService } from './posts-service.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -28,7 +32,13 @@ describe('AppComponent', () => {
           MatToolbarModule,
           MatCardModule,
           MatButtonModule,
-          NoopAnimationsModule
+          NoopAnimationsModule,
+          MomentModule,
+          ReactiveFormsModule,
+          HttpClientTestingModule
+        ],
+        providers: [
+          PostsServiceService
         ]
       }).compileComponents();
     })
