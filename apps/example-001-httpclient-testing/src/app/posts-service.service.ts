@@ -7,8 +7,9 @@ import { Observable } from 'rxjs/Observable';
 export class PostsServiceService {
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<any> {
-    return this.http.get(`${environment.api}/posts`);
+  getAll(params?: any): Observable<any> {
+    const options = params ? {params: params} : {};
+    return this.http.get(`${environment.api}/posts`, options);
   }
 
   get(id): Observable<any>  {
