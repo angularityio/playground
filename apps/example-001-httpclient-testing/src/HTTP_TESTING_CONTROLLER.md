@@ -14,7 +14,7 @@ You can find all the examples on [Github](https://github.com/angularityio/playgr
 
 ## What are we testing.
 
-Wether you use a service from a component or you are building out you remote service layer you basically want to make sure 1) the right call is made 2) you service or component behaves correctly based on a variety of responses, mostly success and failures. With the `HttpTestingController` is quite easy...let's check it out.
+Wether you use a service from a component or you are building out your remote service layer you basically want to make sure 1) the right call is made 2) you service or component behaves correctly based on a variety of responses, mostly success and failures. With the `HttpTestingController` is quite easy...let's check it out.
 
 
 ## Let's go - The simplest case
@@ -45,3 +45,6 @@ Wether you use a service from a component or you are building out you remote ser
 ```
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 ```
+
+
+* ARTICLE UNDER CONSTRUCTION :-) * Will explain in details the following examples: [https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32)
