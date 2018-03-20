@@ -144,7 +144,7 @@ describe('PostsServiceService', () => {
 
   });
 
-  describe('requests', () => {
+  describe('responses', () => {
 
     it('should getPosts', () => {
       const response = [{
@@ -159,6 +159,7 @@ describe('PostsServiceService', () => {
         // that your service or component handle specific response appropriately.
         expect(result.length).toEqual(1);
         expect(result[0].title).toEqual('Testing HttpClient');
+        expect(result[0].created_at).toEqual(new Date('2017-12-07T04:39:49.447Z'));
       });
       backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush(response);
       backend.verify();
@@ -189,7 +190,9 @@ describe('PostsServiceService', () => {
         expect(response).toEqual(jasmine.objectContaining({
           id: 2,
           title: 'Creating a post',
-          content: jasmine.any(String)
+          content: jasmine.any(String),
+          created_at: new Date('2017-12-07T04:39:49.447Z'),
+          updated_at: jasmine.any(Date)
         }));
       });
       const response = {
@@ -264,6 +267,34 @@ describe('PostsServiceService', () => {
       const call = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
       expect(call.request.method).toEqual('DELETE');
       call.flush({});
+      backend.verify();
+    });
+
+    it('should fire only once', () => {
+      service.get(1).subscribe((response) => {
+        expect(response.id).toEqual(1);
+      });
+      service.get(2).subscribe((response) => {
+        expect(response.id).toEqual(2);
+      });
+      const call1 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
+      const call2 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
+      call2.flush({id: 2});
+      expect(call2.cancelled).toBeTruthy(); // http.get close after firing.
+      call1.flush({id: 1});
+      backend.verify();
+    });
+
+    it('should cancel previous request (switchMap)', () => {
+      service.setupGetRequestSubject().subscribe((response) => {
+        expect(response.id).toEqual(2);
+      });
+      service.getViaSubject(1);
+      service.getViaSubject(2);
+      const call1 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
+      const call2 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
+      expect(call1.cancelled).toBeTruthy();
+      call2.flush({id: 2});
       backend.verify();
     });
 
