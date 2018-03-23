@@ -1,7 +1,7 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { PostsServiceService } from './posts-service.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { environment } from '../environments/environment';
 import { HttpHeaders } from '@angular/common/http';
 
@@ -29,9 +29,17 @@ describe('PostsServiceService', () => {
 
   describe('requests', () => {
 
-    it('should expectOne', () => {
+    it('should expectOne url', () => {
       service.getAll().subscribe();
       backend.expectOne(`https://rails-rest.herokuapp.com/posts`);
+      backend.verify();
+    });
+
+    it('should expectOne url and method', () => {
+      service.getAll().subscribe();
+      backend.expectOne({url: `https://rails-rest.herokuapp.com/posts`});
+      service.getAll().subscribe();
+      backend.expectOne({url: `https://rails-rest.herokuapp.com/posts`, method: 'GET'});
       backend.verify();
     });
 
@@ -59,7 +67,7 @@ describe('PostsServiceService', () => {
 
     it('should expectOne request different style (using TestRequest)', () => {
       service.getAll().subscribe();
-      const call = backend.expectOne(`https://rails-rest.herokuapp.com/posts`);
+      const call: TestRequest = backend.expectOne(`https://rails-rest.herokuapp.com/posts`);
       expect(call.request.method).toEqual('GET');
       backend.verify();
     });
@@ -125,7 +133,7 @@ describe('PostsServiceService', () => {
       backend.verify();
     });
 
-    it('should a few more attributes on request that are useful', () => {
+    it('should have a few more attributes on request that are useful', () => {
       service.getAll({page: 1}).subscribe();
       const calls = backend.match((request) => {
         return request.url == `https://rails-rest.herokuapp.com/posts` &&
