@@ -3,7 +3,7 @@ import { TestBed, inject } from '@angular/core/testing';
 import { PostsServiceService } from './posts-service.service';
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { environment } from '../environments/environment';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpRequest } from '@angular/common/http';
 
 /**
  * This test suite show several aspects of using the HttpTestingController I will
@@ -58,7 +58,7 @@ describe('PostsServiceService', () => {
 
     it('should expectOne request', () => {
       service.getAll().subscribe();
-      backend.expectOne((request) => {
+      backend.expectOne((request: HttpRequest<any>) => {
         return request.url.match(/posts/) &&
               request.method === 'GET';
       });
@@ -107,12 +107,12 @@ describe('PostsServiceService', () => {
     it('should match different requests', () => {
       service.getAll().subscribe();
       service.get(1).subscribe();
-      const calls = backend.match((request) => {
-        return request.url == `https://rails-rest.herokuapp.com/posts` &&
-               request.method === 'GET';
-      });
       const otherCalls = backend.match((request) => {
         return request.url == `https://rails-rest.herokuapp.com/posts/1.json` &&
+               request.method === 'GET';
+      });
+      const calls = backend.match((request) => {
+        return request.url == `https://rails-rest.herokuapp.com/posts` &&
                request.method === 'GET';
       });
       expect(calls.length).toEqual(1);
@@ -135,7 +135,7 @@ describe('PostsServiceService', () => {
 
     it('should have a few more attributes on request that are useful', () => {
       service.getAll({page: 1}).subscribe();
-      const calls = backend.match((request) => {
+      const calls = backend.match((request: HttpRequest<any>) => {
         return request.url == `https://rails-rest.herokuapp.com/posts` &&
                request.urlWithParams == `https://rails-rest.herokuapp.com/posts?page=1` &&
                request.method === 'GET' &&

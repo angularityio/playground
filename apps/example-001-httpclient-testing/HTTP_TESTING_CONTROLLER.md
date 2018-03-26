@@ -7,7 +7,7 @@ The new `HttpTestingController` that comes with the `@angular/common/http/testin
 * match
 * verify
 
-I this article we will explore it quite in depth.
+I this article we will explore these in depth showing you how can easily test a your services and components with great flexibility.
 
 You can find all the examples on [Github](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32).
 
@@ -52,7 +52,7 @@ export class PostsServiceService {
 
 To retrieve a specific blog post we issue a `get` request map the response to convert some dates but
 we don't call `subscribe` so the class that uses the `PostsServiceService` can control when the call
-is actually trigger and further more can chain other `RxJS` operators as needed.
+is actually triggered and further more can chain other `RxJS` operators as needed.
 
 So let's check how we can test this service.
 
@@ -66,8 +66,8 @@ In it's simplest form you want to make sure that a call with a given url is issu
     backend.verify();
 ```
 
-Note in this case it has to match exaclty the URL and the URL should not have any query parameters.
-Also be sure to `subscribe` is needed or nothing fires. Perfect it works.
+In this case it has to match exaclty the URL and the URL should not have any query parameters. Also be sure to call `subscribe` on the service otherwise nothing fires. Perfect it works. The `verify` method is there to ensure that no unexpected calls have been issued by the service.
+
 
 ## Expect one request
 
@@ -83,7 +83,7 @@ a string to the `requestOne` as follows:
       backend.verify();
 ```
 
-Note here we match the url string, so this gives you a bit more flexibility on what to match.
+Note here we match the URL string, so this gives you a bit more flexibility on what to match. The request is an instance of `HttpRequest` and will explore this class more in depth in a little bit.
 
 If you just want to check an expected url and method you can also use the following form:
 
@@ -94,23 +94,21 @@ If you just want to check an expected url and method you can also use the follow
 ```
 
 But wait, there is way more, how to match url parameters, ensure the proper body is passed onto the request,
-and how course return a variety response.
+and how course return we'll explore how to return variety of responses.
 
 
 ## Configuration
 
-Let's step back just a bit and see what happens behind the scene. The services does call `http.get`
-but does no remote call is made. Angular provides a mocking service that enables us to inspect the requests and
-control the response that are returned from each of the calls.
+Let's step back just a bit and see what happens behind the scene.
+When your service is used by your application running in the browser, not in test mode, when the service calls `http.get` an actuall call to a server is issued, and a response come back a little bit latter, asynchronously.  As we write unit tests we don't want to use a real server, we want to use a mock server and be able to return a variety of responses, to ensure your application behaves corretly in all circumstances. To this end Angular provides a mocking service that enables us to inspect the requests and control the response that are returned from each of the calls.
 
-So let's see how we setup our test harness. First import the `HttpClientTestingModule` and `HttpTestingController`.
+So let's see how we setup our test harness and mock server. First import the `HttpClientTestingModule` and `HttpTestingController`.
 
 ```
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 ```
 
-You basically just need to import the `HttpClientTestingModule` and provide `HttpTestingController`.
-When importing the testing module it imports for you the normal `HttpClientModule` which enables
+You basically just need to import the `HttpClientTestingModule` and provide `HttpTestingController`. When importing the testing module it imports for you the normal `HttpClientModule` which enables
 the HttpClient you use in your service, but it also provides `HttpBackend` as an instance of `HttpClientTestingBackend`
 which is the mock backend. Wow, that was a mouth full, so basically do the following:
 
@@ -137,11 +135,18 @@ describe('PostsServiceService', () => {
 }
 ```
 
-And now `backend` is the mock we use in all our examples. This works across all classes, components,
-service, wether your own or third party ones... as long they use the new `@angular/common/http/HttpClient`.
+And now `backend` is the mock we use in all our examples. This works across all classes, components, service, wether your own or third party ones... as long they use the new `@angular/common/http/HttpClient`.
 
+Now when running your test whenever the service calls `http.get`
+your have access to all the requests and you can provide individual responses to these requests.
+
+Let's get back to testing some more.
 
 # expectOne returns a TestRequest
+
+The call to `expectOne` return an instance of `TestRequest` that you can use to access the request, wether the request has been cancelled and more importantly, as we'll show in a bit, can be used to emulate responses from the server.
+
+Here you can see that we can access the method and ensure that it uses the proper method.
 
 ```TypeScript
       service.getAll().subscribe();
@@ -152,28 +157,9 @@ service, wether your own or third party ones... as long they use the new `@angul
 
 # match instead of expectOne
 
-```TypeScript
-      service.getAll().subscribe();
-      backend.match((request) => {
-        return request.url.match(/posts/) &&
-               request.method === 'GET';
-      });
-      backend.verify();
-```
+If you want to test a serie of requests you can use `match` instead of `expectOne`. This can be the case of a complex service method that chains mulltiples calls.
 
-# match more than one
-
-```TypeScript
-      service.getAll().subscribe();
-      service.get(1).subscribe();
-      backend.match((request) => {
-        return request.url.match(/posts/) &&
-              request.method === 'GET';
-      });
-      backend.verify();
-```
-
-TODO: merge these two examples
+In the example below we simply issue two calls directly in the test, but you can use this approach to test more complex service methods.
 
 ```TypeScript
       service.getAll().subscribe();
@@ -188,14 +174,35 @@ TODO: merge these two examples
       backend.verify();
 ```
 
+You'll pass a matcher function to the `match` method and `match` will collect all matching requests. If you just return `true` you will get all the issued requests so far. Note that `match` doesn't fail the spec is there is not matches, it's just used to collect a call, you can write your expectations once you grabbed it.
+
 # match different requests
 
+If for some reasons you wanted to segregate different calls you can even have multiple matches as shown bellow.
+
 ```TypeScript
+      service.getAll().subscribe();
+      service.get(1).subscribe();
+      const otherCalls = backend.match((request) => {
+        return request.url == `https://rails-rest.herokuapp.com/posts/1.json` &&
+               request.method === 'GET';
+      });
+      const calls = backend.match((request) => {
+        return request.url == `https://rails-rest.herokuapp.com/posts` &&
+               request.method === 'GET';
+      });
+      expect(calls.length).toEqual(1);
+      expect(otherCalls.length).toEqual(1);
+      expect(calls[0].request.url).toEqual(`https://rails-rest.herokuapp.com/posts`);
+      expect(otherCalls[0].request.url).toEqual(`https://rails-rest.herokuapp.com/posts/1.json`);
+      backend.verify();
 ```
+
+We now have two lists of calls. This just demonstrates that you have lots of flexibility `match`.
 
 # What about url with params?
 
-Glad you asked
+Glad you asked. `expectOne` expects an exact url without url parameters. If you expect `/posts` it wouldn't match `/posts?page=1`. If you need that level of granularity, for example you want to ensure you pagination logic issues the right parameters, the you can use `match` in conjunction with `request.params` or `request.urlWithParams`. Et voilà!
 
 ```TypeScript
       service.getAll({page: 1}).subscribe();
@@ -209,6 +216,12 @@ Glad you asked
 ```
 
 # And a few more useful attributes
+
+The expect match function signature is the following:
+
+`((req: HttpRequest<any>) => boolean)`
+
+The `HttpRequest` class has more useful parameters you will certainly use when you write your tests. Here is a more extensive use
 
 ```TypeScript
       service.getAll({page: 1}).subscribe();
@@ -225,7 +238,17 @@ Glad you asked
       backend.expectNone(`https://rails-rest.herokuapp.com/posts`); // If url with params, use `.match`
       backend.verify();
 ```
+
 # Requests and responses
+
+Making sure you app issues the proper requests is important, but mostly all your tests will make sure you app knows how to deal with actual server responses. As we are doing unit test we are testing the various layers of your application, but we are not testing your server. An easy way to get server responses is to use Postman, Curl, or the Chrome console to just copy the JSON a specific server request returns, then use that response in your test.
+
+You can easily turn JSON into a Typescript file, or use the JSON directly in your spec if the payload is not too large. You can also use a fixture loader to use JSON into your specs but I haven't tried that out in an Angular 2+ project yet. You may have integration tests to test that your application works against a real server, but this is outside the scope of this artical.
+
+[CONTINUE HERE]
+* When providing a response you want to make sure you are actually testing relevant code of your service or component.
+* For example a service call that doesn't transform your response in any way
+* One aspect to think about is what are you testing. You want to make sure that you test
 
 Onto returning responses.
 TODO: explain the following
