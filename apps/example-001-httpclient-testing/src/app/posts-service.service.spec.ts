@@ -285,8 +285,8 @@ describe('PostsServiceService', () => {
       service.get(2).subscribe((response) => {
         expect(response.id).toEqual(2);
       });
-      const call1 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
-      const call2 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
+      const call1: TestRequest = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
+      const call2: TestRequest = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
       call2.flush({id: 2});
       expect(call2.cancelled).toBeTruthy(); // http.get close after firing.
       call1.flush({id: 1});
@@ -294,15 +294,24 @@ describe('PostsServiceService', () => {
     });
 
     it('should cancel previous request (switchMap)', () => {
+      let counter = 2;
       service.setupGetRequestSubject().subscribe((response) => {
-        expect(response.id).toEqual(2);
+        expect(response.id).toEqual(counter++);
+        expect(response.id).toBeGreaterThan(1);
+        expect(response.id).toBeLessThan(4);
       });
       service.getViaSubject(1);
       service.getViaSubject(2);
       const call1 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
       const call2 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
-      expect(call1.cancelled).toBeTruthy();
+      expect(call1.cancelled).toBeTruthy(); // second call cancelled first one
       call2.flush({id: 2});
+      expect(call2.cancelled).toBeTruthy();
+      service.getViaSubject(3);
+      const call3 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/3.json`);
+      expect(call3.cancelled).toBeFalsy();
+      call3.flush({id: 3});
+      expect(call3.cancelled).toBeTruthy();
       backend.verify();
     });
 

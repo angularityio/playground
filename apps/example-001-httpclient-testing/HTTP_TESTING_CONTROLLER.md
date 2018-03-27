@@ -1,5 +1,7 @@
 # Http Testing in depth
 
+v0.9
+
 The new `HttpTestingController` that comes with the `@angular/common/http/testing` package is small and mighty, simple and powerfull.  It provides only the following 4 methods but they can used to test a large variety of scenarios.
 
 * expectOne
@@ -241,22 +243,25 @@ The `HttpRequest` class has more useful parameters you will certainly use when y
 
 # Requests and responses
 
-Making sure you app issues the proper requests is important, but mostly all your tests will make sure you app knows how to deal with actual server responses. As we are doing unit test we are testing the various layers of your application, but we are not testing your server. An easy way to get server responses is to use Postman, Curl, or the Chrome console to just copy the JSON a specific server request returns, then use that response in your test.
+Making sure your application issues the proper requests is important, but mostly your unit tests will make sure you app knows how to deal with actual server responses. When unit testing you are testing the various layers of your application, and the goal here is not to test the server, we reserve that for integration testing. The goal is to exhaustively test that your component can deal with a representative list of scenarios, for example with an empty reponse, with one record, with many records, an server or network error. Not only is writing unit tests faster than in browser debugging with the "save, reload browser, click here and there" cycle, especially if you use tools like wallaby.js or do focused testing (by using `fit` or `fdescribe` instead of `it` and `describe`).
 
-You can easily turn JSON into a Typescript file, or use the JSON directly in your spec if the payload is not too large. You can also use a fixture loader to use JSON into your specs but I haven't tried that out in an Angular 2+ project yet. You may have integration tests to test that your application works against a real server, but this is outside the scope of this artical.
+ An easy way to get the JSON for a server responses is to use Postman, Curl, or the Chrome console to just copy the JSON a specific server request returns, then use that response in your test. For smaller payload it's also easy to just create the JSON inline in your test.  You can easily turn JSON saved from a real call into a Typescript file, or use the JSON directly in your spec if the payload is not too large. You can also use a fixture loader to use JSON into your specs but I haven't tried a fixture load out in an Angular 2+ project yet and I wrote some rather large test suites. I mostly have a fixture folder with many file like `get_policy.json.ts` that declares a constant with the payload. You may also want to have integration tests that tests parts of your application against a real server, but this is outside the scope of this artical.
 
-[CONTINUE HERE]
-* When providing a response you want to make sure you are actually testing relevant code of your service or component.
-* For example a service call that doesn't transform your response in any way
-* One aspect to think about is what are you testing. You want to make sure that you test
+ One aspect to consider when writing test is to test actual code and not just the framework. For example in a service spec if you return a response to an `http.get` call that does not transform the response in any way, then you really didn't test anything else than the response your provided, which would be pointless. If on the other hand your service does additional transformation, then you test has value and allows you to ensure that your code works properly. For component testing that use services I see many developers mock the service call, however this can be tricky and requires to know how the service is implemented, I find it as efficient to simply `flush` the expected response using our mock backend (`HttpTestingController`) and ensure that the component behaves as expected.
 
-Onto returning responses.
-TODO: explain the following
-        // The benefits here are not to test the data you entered but really to test
-        // that your service or component handle specific response appropriately.
+ Now lt's look at a few examples.
+
 
 
 # Flushing a response
+
+So when calling `expectOne` or `match` our mock backend returns an instance of `TestRequest` that has the following methods
+
+* flush
+* error
+* event
+
+These method allow to emulate a variety of results. In the example below we return an array of blog posts to the `getAll()` method and ensure that the expect length was returned but most importantly that our date transformaton code works.
 
 ```TypeScript
       const response = [{
@@ -273,32 +278,13 @@ TODO: explain the following
         expect(result[0].title).toEqual('Testing HttpClient');
         expect(result[0].created_at).toEqual(new Date('2017-12-07T04:39:49.447Z'));
       });
-      backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush(response);
-      backend.verify();
-```
-
-# Flushing differently
-
-```TypeScript
-      const response = {
-        'id': 1,
-        'title': 'Testing HttpClient',
-        'content': 'A long description...',
-        'created_at': '2017-12-07T04:39:49.447Z',
-        'updated_at': '2017-12-07T04:39:49.447Z'
-      };
-      service.get(1).subscribe((result) => {
-        expect(result.title).toEqual('Testing HttpClient');
-      });
-      const call = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
-      expect(call.request.method).toEqual('GET');
-      call.flush(response);
+      backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush(response);   // <- Engage...sending response
       backend.verify();
 ```
 
 # Creating a post
 
-speak about data conversion and jasmine.objectContaining
+Similar than the previous scenario, after calling `backend.expectOne` we have an instance of the `TestRequest` and we ensure that the call request method is a `POST` before sending the response back to the service. Inside the subscribe block of the service call we use the `jasmine.objectContaining` utility that allows to check partial objects which is interesting when you receive a large payloads.
 
 ```TypeScript
       service.save({
@@ -320,13 +306,15 @@ speak about data conversion and jasmine.objectContaining
         'created_at': '2017-12-07T04:39:49.447Z',
         'updated_at': '2017-12-07T04:39:49.447Z'
       };
-      const call = backend.expectOne(`https://rails-rest.herokuapp.com/posts`);
+      const call: TestRequest = backend.expectOne(`https://rails-rest.herokuapp.com/posts`);
       expect(call.request.method).toEqual('POST');
       call.flush(response);
       backend.verify();
 ```
 
 # When thing go wrong - responding to server errors
+
+When flusing you can also add a specific status, for example a  Ruby on Rails server oftens return 422 when there is a validation error letting us know that the user provided some invalid data.
 
 ```TypeScript
       service.save({
@@ -342,18 +330,10 @@ speak about data conversion and jasmine.objectContaining
       backend.verify();
 ```
 
-# And network errors
+In addition to passing a status to the `flush` method you can also simply call the `error method`
+
 
 ```TypeScript
-      service.save({
-        title: 'Trying something dangerous'
-      }).subscribe((response) => {
-        throw('Should not land here');
-      }, (error) => {
-        expect(error.status).toEqual(422);
-        expect(error.statusText).toEqual('Some server error');
-      });
-
       backend.expectOne(`https://rails-rest.herokuapp.com/posts`).error(
         new ErrorEvent(''), {
         status: 422,
@@ -362,14 +342,14 @@ speak about data conversion and jasmine.objectContaining
       backend.verify();
 ```
 
-# Update example
-
-see if it adds anyting compare to create...ditto for delete
-
-```TypeScript
-```
 
 # Did you know... HttpClient Observable cleanup after themself
+
+The `HttpClient` completes it's observable once the full body has been returned or when an error occurs. So basically one request get's only one response. You subscription is dead afterwards, so not a very reactive approach, but then again this work pretty well and you can still wrap and chain your remote calls as we'll explore in the next section.  I assume this approach decided by the team to have a more familiar approach for developers comming from a world full of promises.
+
+TODO:   Add link/reference to Promise
+
+The following example shows that a request is cancelled after it is fired.
 
 ```TypeScript
       service.get(1).subscribe((response) => {
@@ -378,46 +358,96 @@ see if it adds anyting compare to create...ditto for delete
       service.get(2).subscribe((response) => {
         expect(response.id).toEqual(2);
       });
-      const call1 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
-      const call2 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
+      const call1: TestRequest = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
+      const call2: TestRequest = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
       call2.flush({id: 2});
       expect(call2.cancelled).toBeTruthy(); // http.get close after firing.
       call1.flush({id: 1});
       backend.verify();
 ```
 
+When you look at the actual implementation of `HttpXhrBackend` you'll see that the code effectivley completes the observable up receiving a successful response:
+https://github.com/angular/angular/blob/master/packages/common/http/src/xhr.ts#L218
+
+Now the testing framework emulates this beahvior, check out `TestRequest`:
+
+https://github.com/angular/angular/blob/master/packages/common/http/testing/src/request.ts#L66
+
+
 # Reactive Style `switchMap` example
 
-explain about data synchronization issues due to non-cancelled calls
-and how to use `switchMap` to avoid this.
+One coding practice I see in many projects, often spearheaded by NgRx, is to wrap your call by your of chain of Observables. One advantage is for example when using the `switchMap` operation is to be able to cancel requests that haven't returned yet which you would like to ignore. This can be the case when having multiple calls (i.e. master details) where when you select a master some details information is retrieve remotely, the user select a new master record before the details calls are complete. Basically this occurs on slow networks or with hyper caffeniated users and could lead to information that is out of sync being displayed on the screen.
+
+TODO: add link to NgRx.
+
+This is the last example, so please bear with me. This time the service uses an `rxjs/Subject` to which a component can subscribe. This subscription doesn't close, the component should unsubscribe in it's ngDestroy method.
+
+For this demo the service declares the following `setupGetRequestSubject`. I agree naming could be better.
 
 ```TypeScript
+  setupGetRequestSubject(): Observable<any> {
+    return this.getRequestSubject.switchMap(id => this.get(id)).share();
+  }
+```
+So we have one active observalbe that is triggered every time the `getViaSubject` method is invoked.
+
+```TypeScript
+  getViaSubject(id):void  {
+    this.getRequestSubject.next(id);
+  }
+```
+
+That Subjet is long lived and triggers itself the `http.get` calls which are short lived. The advantage is now we can wrap the call with `switchMap` and ensuring that if we have multiple calls in sequence only the last one actually is taken into account.
+
+In the test below we show that two calls can be issued before a response comes back, and the second call one cancels the first one. Altough the call is cancelled our subscription is still alive and we can issue further calls.
+
+```TypeScript
+      let counter = 2;
       service.setupGetRequestSubject().subscribe((response) => {
-        expect(response.id).toEqual(2);
+        expect(response.id).toEqual(counter++);
+        expect(response.id).toBeGreaterThan(1);
+        expect(response.id).toBeLessThan(4);
       });
       service.getViaSubject(1);
       service.getViaSubject(2);
       const call1 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/1.json`);
       const call2 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
-      expect(call1.cancelled).toBeTruthy();
+      expect(call1.cancelled).toBeTruthy(); // second call cancelled first one
       call2.flush({id: 2});
+      expect(call2.cancelled).toBeTruthy();
+      service.getViaSubject(3);
+      const call3 = backend.expectOne(`https://rails-rest.herokuapp.com/posts/3.json`);
+      expect(call3.cancelled).toBeFalsy();
+      call3.flush({id: 3});
+      expect(call3.cancelled).toBeTruthy();
       backend.verify();
 ```
 
+I feel this example was a bit convoluted, but hopefully it shows how you can use Angular's awesome testing framework to explore how your application issues requests and uses Observables. This can be tricky to get right sometimes and the `@angular/common/http/testing` library is your indispensable friend in this scenario.
 
-
-
+TODO: indispensable <- check english equivalent
 
 # verify?
 
 By now you guessed it... we use `backend.verify()` to make sure they are no calls we missed.
 
-TODO: finish writing article...them make it way smaller.
+# Further reading:
 
-```TypeScript
-```
-
+* The Angular spec describing the `HttpClient` behavior is a good read for understanding all the aspects of the HttpClient class. Might be good material for an article?  https://github.com/angular/angular/blob/master/packages/common/http/test/client_spec.ts#L19
 
 
+* This code can be found on Github[https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32)
 
-**ARTICLE UNDER CONSTRUCTION :-)** Will explain in details the following examples: [https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32)
+
+
+Enjoy!
+
+Daniel
+
+
+PS:
+
+* Please reach out on twitter @danielwanja or by email daniel@angularity.io
+* I'm sure I missed something obvious in this article, so please let me know so I can improve it.
+
+

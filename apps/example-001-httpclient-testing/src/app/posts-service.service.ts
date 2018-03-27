@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/map';
