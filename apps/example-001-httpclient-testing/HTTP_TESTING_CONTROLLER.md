@@ -1,13 +1,13 @@
 # Angular's HttpClient Testing in depth
 
-The new `HttpTestingController` that comes with the `@angular/common/http/testing` package is small and mighty, simple and powerful.  It provides only the following four methods that can be used to test a large variety of scenarios.
+The new `HttpTestingController` class that comes with the `@angular/common/http/testing` package is small and mighty, simple and powerful.  It provides only the following four methods that can be used to test a large variety of scenarios.
 
 * expectOne
 * expectNone
 * match
 * verify
 
-I this article we will explore the usage of these methods in depth showing you how you can test your services and components with great flexibility.
+I this article we will explore the usage of these methods showing you how you can test your services and components with great flexibility.
 
 You can find all the examples on [Github](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32).
 
