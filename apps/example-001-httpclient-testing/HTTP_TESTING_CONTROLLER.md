@@ -1,24 +1,22 @@
 # Angular's HttpClient Testing in depth
 
-v0.11
-
-The new `HttpTestingController` that comes with the `@angular/common/http/testing` package is small and mighty, simple and powerful.  It provides only the following 4 methods but they can used to test a large variety of scenarios.
+The new `HttpTestingController` that comes with the `@angular/common/http/testing` package is small and mighty, simple and powerful.  It provides only the following four methods that can be used to test a large variety of scenarios.
 
 * expectOne
 * expectNone
 * match
 * verify
 
-I this article we will explore the usage of these methods in depth showing you how you can easily test your services and components with great flexibility.
+I this article we will explore the usage of these methods in depth showing you how you can test your services and components with great flexibility.
 
 You can find all the examples on [Github](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32).
 
 
 ## What are we testing?
 
-Wether you use a service from a component or you are building out your remote service layer you basically want to make sure of two things. First that the right requests are issues, secondly that you service or component behaves correctly based on a variety of responses. With the `HttpTestingController` is quite easy...let's check it out.
+Whether you use a service from a component or you are building out your remote service layer you want to make sure of two things. First that the correct requests are issues, secondly that you service or component behaves correctly based on a variety of responses. With the `HttpTestingController` it is quite easy... let's check it out.
 
-So in this example we are testing the `PostsServiceService` class which is a simple RESTful client allowing to list, create, update and delete blog posts. So basically issuing the following requests:
+So in this example, we are testing the `PostsServiceService` class which is a simple RESTful client allowing to list, create, update and delete blog posts. So basically issuing the following requests:
 
 ```
   Prefix Verb   URI Pattern              Controller#Action
@@ -29,9 +27,9 @@ So in this example we are testing the `PostsServiceService` class which is a sim
         DELETE /posts/:id(.:format)      posts#destroy
 ```
 
-You can check this service [here](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.ts#L22)
+You can view the code of the PostService class  [here](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.ts#L22)
 
-It basically uses Angular's new `common/http/HttpClient`. Let's look at one of the methods, the other follow a similar pattern.
+It uses Angular's new `common/http/HttpClient`. Let's look at one of the methods the service implements; the others follow a similar pattern.
 
 ```TypeScript
 import { HttpClient } from '@angular/common/http';
@@ -50,13 +48,13 @@ export class PostsServiceService {
 }
 ```
 
-To retrieve a specific blog post we issue a `get` request map the response to convert some dates but we don't call `subscribe` so the class that uses the `PostsServiceService` can control when the call is actually triggered and further more can chain other `RxJS` operators as needed.
+To retrieve a specific blog post, we issue a `get` request then map the response to convert some dates. Notice we don't call `subscribe` here so the class that uses the `PostsServiceService` can control when the call is triggered, and furthermore can chain other `RxJS` operators as needed.
 
 So let's check how we can test this service.
 
 ## Let's go - The simplest case
 
-In it's simplest form you want to make sure that a call with a given url is issued.
+In it's simplest form you want to make sure that the service issues a call for a given URL:
 
 ```TypeScript
     service.getAll().subscribe();
@@ -64,7 +62,7 @@ In it's simplest form you want to make sure that a call with a given url is issu
     backend.verify();
 ```
 
-In this case it has to match exactly the URL and the URL should not have any query parameters. Also be sure to call `subscribe` on the service otherwise nothing fires. Perfect it works. The `verify` method is there to ensure that no unexpected calls have been issued by the service.
+In this case, it has to match the URL, and the URL should not have any query parameters. Also be sure to call `subscribe` on the service otherwise no requests fires. Perfect it works. The `verify` method is there to ensure that the service issues no unexpected calls.
 
 
 ## Expect one request
@@ -80,9 +78,9 @@ If you want to have a bit more control over what type of requests you expect you
       backend.verify();
 ```
 
-Note here we match the URL string, so this gives you a bit more flexibility on what to match. The request is an instance of `HttpRequest` and will explore this class more in depth in a little bit.
+Using a function gives you more control on how to match a request. Here we use the JavaScript string matching function to check any requests that have the word "posts" in its URL and use a 'GET' method. The request is an instance of `HttpRequest` and will explore this class more in-depth in a little bit.
 
-If you just want to check an expected url and method you can also use the following form:
+If you only want to check an expected URL and method you can use the following form:
 
 ```TypeScript
       service.getAll().subscribe();
@@ -90,13 +88,13 @@ If you just want to check an expected url and method you can also use the follow
       backend.verify();
 ```
 
-But wait, there is way more, how to match url parameters, ensure the proper body is passed onto the request, and how course return we'll explore how to return variety of responses.
+But wait, there is way more, how to match URL parameters, ensure the proper body is passed onto the request, and how course return we'll explore how to return a variety of responses.
 
 
 ## Configuration
 
 Let's step back just a bit and see what happens behind the scene.
-When your service is used by your application running in the browser, not in test mode, when the service calls `http.get` an actual call to a server is issued, and a response come back a little bit later, asynchronously.  As we write unit tests we don't want to use a real server, we want to use a mock server and be able to return a variety of responses, to ensure your application behaves correctly in all circumstances. To this end Angular provides a mocking service that enables us to inspect the requests and control the response that are returned from each of the calls.
+When your application is running in the browser, not in test mode, and the service invokes `http.get` then an actual call to a server is issued, and a little bit later a response comes back asynchronously.  However, when we write unit tests we don't want to use a real server, we want to use a mock server and be able to return a variety of responses to ensure your application behaves correctly in all circumstances. To this end, Angular provides a mocking service that enables us to inspect the requests and allows your to specify the response returned for each of the calls.
 
 So let's see how we setup our test harness and mock server. First import the `HttpClientTestingModule` and `HttpTestingController`.
 
@@ -104,7 +102,7 @@ So let's see how we setup our test harness and mock server. First import the `Ht
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 ```
 
-You basically just need to import the `HttpClientTestingModule` and provide `HttpTestingController`. When importing the testing module it imports for you the normal `HttpClientModule` which enables the HttpClient you use in your service, but it also provides `HttpBackend` as an instance of `HttpClientTestingBackend` which is the mock backend. Wow, that was a mouth full, so basically do the following:
+You just need to import the `HttpClientTestingModule` and provide `HttpTestingController`. When importing the testing module it imports for you the normal `HttpClientModule` which enables the HttpClient you use in your service, but it also provides `HttpBackend` as an instance of `HttpClientTestingBackend` which is the mock backend. Wow, that was a mouth full, so basically do the following:
 
 
 ```TypeScript
@@ -129,17 +127,17 @@ describe('PostsServiceService', () => {
 }
 ```
 
-And now `backend` is the mock we use in all our examples. This works across all classes, components, service, wether your own or third party ones... as long they use the new `@angular/common/http/HttpClient`.
+By importing the `HttpClientTestingModule`, your `backend` is now the mock we use in all our examples. This configuration injects the proper mock backend into all classes, components, service, whether your own or third-party ones as long they use the new `@angular/common/http/HttpClient`.
 
-Now when running your test whenever the service calls `http.get` your have access to all the requests and you can provide individual responses to these requests.
+Now when running your test whenever the service calls `http.get`, you have access to all the requests, and you can provide individual responses to these requests.
 
 Let's get back to testing some more.
 
 # expectOne returns a TestRequest
 
-The call to `expectOne` return an instance of `TestRequest` that you can use to access the request, wether the request has been cancelled and more importantly, as we'll show in a bit, can be used to emulate responses from the server.
+The call to `expectOne` returns an instance of `TestRequest` allowing you,  as we'll show in a bit,  to emulate responses from the server. You can additionally check if the service canceled the request.
 
-Here you can see that we can access the method and ensure that it uses the proper method.
+In the following example, you can see that we can access the request method to ensure that it is the correct one.
 
 ```TypeScript
       service.getAll().subscribe();
@@ -150,9 +148,9 @@ Here you can see that we can access the method and ensure that it uses the prope
 
 # match instead of expectOne
 
-If you want to test a series of requests you can use `match` instead of `expectOne`. This can be the case of a complex service method that chains multiples calls.
+If you want to test a series of requests you can use `match` instead of `expectOne`. This approach can be the case of a complex service method that chains multiples call.
 
-In the example below we simply issue two calls directly in the test, but you can use this approach to test more complex service methods.
+In the example below, we issue two calls directly in the test, but you can use this approach to test service methods that would issue multiple call, like for example using `forkJoin`.
 
 ```TypeScript
       service.getAll().subscribe();
@@ -167,11 +165,11 @@ In the example below we simply issue two calls directly in the test, but you can
       backend.verify();
 ```
 
-You'll pass a matcher function to the `match` method and `match` will collect all matching requests. If you just return `true` you will get all the issued requests so far. Note that `match` doesn't fail the spec if there is not matches, it's just used to collect a call, you can write your expectations once you grabbed it.
+You'll pass a matcher function to the `match` method, and `match` will collect all matching requests. If you return `true`, you will get all the issued requests so far. Note that `match` doesn't fail the spec if there are no matches, it's just used to collect a call, you can write your expectations once you grabbed it.
 
 # match different requests
 
-If for some reasons you wanted to segregate different calls you can even have multiple matches as shown bellow.
+If for some reasons you wanted to segregate different calls you can even have multiple matches as shown below.
 
 ```TypeScript
       service.getAll().subscribe();
@@ -191,11 +189,11 @@ If for some reasons you wanted to segregate different calls you can even have mu
       backend.verify();
 ```
 
-We now have two lists of calls. This just demonstrates that you have lots of flexibility `match`.
+We now have two lists of calls. This example demonstrates that you have lots of flexibility using the `match` method.
 
-# What about url with params?
+# What about URLs with params?
 
-Glad you asked. `expectOne` expects an exact url without url parameters. If you expect `/posts` it wouldn't match `/posts?page=1`. If you need that level of granularity, for example you want to ensure you pagination logic issues the right parameters, the you can use `match` in conjunction with `request.params` or `request.urlWithParams`. Et voilà!
+Glad you asked. `expectOne` expects an exact URL that doesn't contain URL parameters. If you expect `/posts` it would not match `/posts?page=1`. If you need that level of granularity, for example, you want to ensure you pagination logic issues the right parameters, then you can use `match` in conjunction with `request.params` or `request.urlWithParams`. Et voilà!
 
 ```TypeScript
       service.getAll({page: 1}).subscribe();
@@ -214,7 +212,7 @@ The expect match function signature is the following:
 
 `((req: HttpRequest<any>) => boolean)`
 
-The `HttpRequest` class has more useful parameters you will certainly use when you write your tests. Here is a more extensive use
+The `HttpRequest` class has more useful parameters you can use when you write your tests. Here is a more extensive use
 
 ```TypeScript
       service.getAll({page: 1}).subscribe();
@@ -234,25 +232,23 @@ The `HttpRequest` class has more useful parameters you will certainly use when y
 
 # Requests and responses
 
-Making sure your application issues the proper requests is important, but mostly your unit tests will make sure you app knows how to deal with actual server responses. When unit testing you are testing the various layers of your application, and the goal here is not to test the server, we reserve that for integration testing. The goal is to exhaustively test that your component can deal with a representative list of scenarios, for example with an empty response, with one record, with many records, a server or network error. Not only is writing unit tests faster than in browser debugging with the "save, reload browser, click here and their" cycle, especially if you use tools like wallaby.js or do focused testing (by using `fit` or `fdescribe` instead of `it` and `describe`).
+Making sure your application issues the proper requests is important, but mostly your unit tests will make sure your app knows how to deal with actual server responses. When unit testing you are testing the various layers of your application, and the goal here is not to "test" the server, we reserve that for integration testing. The goal is to exhaustively test that your component can deal with a representative list of scenarios, for example, a spec that returns an empty response, a response with one record, another with many records, a server or network error. Not only is writing unit tests is faster than in-browser debugging with the usual "save, reload the browser, click here and there" cycle, particularly if you use tools like wallaby.js or do focused testing (by using `fit` or `fdescribe` instead of `it` and `describe`).
 
- An easy way to get the JSON for a server responses is to use Postman, Curl, or the Chrome console to just copy the JSON a specific server request returns, then use that response in your test. For smaller payload it's also easy to just create the JSON inline in your test.  You can easily turn JSON saved from a real call into a Typescript file, or use the JSON directly in your spec if the payload is not too large. You can also use a fixture loader to use JSON into your specs but I haven't tried a fixture load out in an Angular 2+ project yet and I wrote some rather large test suites. I mostly have a fixture folder with many file like `get_policy.json.ts` that declares a constant with the payload. You may also want to have integration tests that tests parts of your application against a real server, but this is outside the scope of this article.
+An easy way to get the JSON for a server response is to use Postman, Curl, or the Chrome console to copy the JSON  returned by a specific request, then use that response in your test. You can turn JSON into a Typescript file, or use the JSON directly in your spec if the payload is not too large. You can also use a fixture loader to use JSON (I haven't tried a fixture loader in an Angular 2+ project yet, only in AngularJS ones so far.  I mostly have a fixture folder with many files named something like `get_policy.json.ts` that declare a constant with the payload. You may also want to have integration tests that verify parts of your application against a real server, but this is outside the scope of this article.
 
- One aspect to consider when writing test is to test actual code and not just the framework. For example in a service spec if you return a response to an `http.get` call that does not transform the response in any way, then you really didn't test anything else than the response your provided, which would be pointless. If on the other hand your service does additional transformation, then you test has value and allows you to ensure that your code works properly. For component testing that use services I see many developers mock the service call, however this can be tricky and requires to know how the service is implemented, I find it as efficient to simply `flush` the expected response using our mock backend (`HttpTestingController`) and ensure that the component behaves as expected.
+One aspect to consider when writing test is to test actual code and not just the framework. For example, in a service spec, if you return a response to an `http.get` request that does not transform the response in any way, then you didn't test anything other than the response you provided in the first place, which would be pointless. If on the other hand, your service does data transformation, then your test has value and allows to ensure that your code works properly. For component testing that involve services, I see many developers mock the service calls.  I find it as efficient to simply `flush` the expected response using our mock backend (`HttpTestingController`) and ensure that the component behaves as expected.
 
- Now lets look at a few examples.
-
-
+ Now let's look at a few examples.
 
 # Flushing a response
 
-So when calling `expectOne` or `match` our mock backend returns an instance of `TestRequest` that has the following methods
+So when calling `expectOne` or `match`, our mock backend returns an instance of `TestRequest` that has the following methods
 
 * flush
 * error
 * event
 
-These method allow to emulate a variety of results. In the example below we return an array of blog posts to the `getAll()` method and ensure that the expected length was returned but most importantly that our date transformation code works.
+These methods allow emulating a variety of results. In the example below,  the call to `getAll()` returns an array of blog posts and we ensure that the expected length was returned and most importantly that our date transformation code works.
 
 ```TypeScript
       const response = [{
@@ -275,7 +271,7 @@ These method allow to emulate a variety of results. In the example below we retu
 
 # Creating a post
 
-Similar than the previous scenario, after calling `backend.expectOne` we have an instance of the `TestRequest` and we ensure that the call request method is a `POST` before sending the response back to the service. Inside the subscribe block of the service call we use the `jasmine.objectContaining` utility that allows to check partial objects which is interesting when you receive a large payloads.
+Similar than the previous scenario, the call to `backend.expectOne` returns an instance of  `TestRequest`  which we use to ensure that the request method is a `POST` then we flush the response back to the service. Inside the subscribe block of the service call we use the `jasmine.objectContaining` utility method that allows checking partial objects, which is interesting when you receive a large payload.
 
 ```TypeScript
       service.save({
@@ -305,7 +301,7 @@ Similar than the previous scenario, after calling `backend.expectOne` we have an
 
 # When thing go wrong - responding to server errors
 
-When flushing you can also add a specific status, for example a  Ruby on Rails server often return 422 when there is a validation error letting us know that the user provided some invalid data.
+When flushing you can also add a specific status, for example, a  Ruby on Rails server often return 422 when there is a validation error letting us know that the user provided some invalid data.
 
 ```TypeScript
       service.save({
@@ -321,7 +317,7 @@ When flushing you can also add a specific status, for example a  Ruby on Rails s
       backend.verify();
 ```
 
-In addition to passing a status to the `flush` method you can also simply call the `error method`
+In addition to passing a status to the `flush` method, you can also simply call the `error` method.
 
 
 ```TypeScript
@@ -334,13 +330,11 @@ In addition to passing a status to the `flush` method you can also simply call t
 ```
 
 
-# Did you know... HttpClient Observable cleanup after themselves
+# Did you know... HttpClient Observable clean up after themselves
 
-The `HttpClient` completes it's observable once the full body has been returned or when an error occurs. So basically one request get's only one response. You subscription is dead afterwards, so not a very reactive approach, but then again this work pretty well and you can still wrap and chain your remote calls as we'll explore in the next section.  I assume this approach decided by the team to have a more familiar approach for developers coming from a world full of promises.
+The HttpClient completes it's observable once the full body of the request has been returned or when an error occurs. So basically one request get's only one response, and after this, your subscription is dead. This is different than a "reactive approach" where the subscription would stay open. I assume closing the request is more familiar for developers coming from a world full of (promises)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise]. Then again, closing the observable works pretty well, and you can still wrap and chain your remote calls as we'll explore in the next section.
 
-TODO:   Add link/reference to Promise
-
-The following example shows that a request is cancelled after it is fired.
+The following example shows that a request is canceled after you flush its response.
 
 ```TypeScript
       service.get(1).subscribe((response) => {
@@ -357,25 +351,25 @@ The following example shows that a request is cancelled after it is fired.
       backend.verify();
 ```
 
-When you look at the actual implementation of `HttpXhrBackend` you'll see that the code effectively completes the observable up receiving a successful response:
+When you look at the actual implementation of `HttpXhrBackend` you'll see that the code effectively completes the observable upon receiving a successful response:
 https://github.com/angular/angular/blob/master/packages/common/http/src/xhr.ts#L218
 
-Now the testing framework emulates this behavior, check out `TestRequest`:
-
+The testing framework emulates this behavior, check out the `TestRequest` source code:
 https://github.com/angular/angular/blob/master/packages/common/http/testing/src/request.ts#L66
 
 
 # Reactive Style `switchMap` example
 
-One coding practice I see in many projects, often spearheaded by NgRx, is to wrap your call by your of chain of Observables. One advantage is for example when using the `switchMap` operation is to be able to cancel requests that haven't returned yet which you would like to ignore. This can be the case when having multiple calls (i.e., master details) where when you select a master some details information is retrieve remotely, the user select a new master record before the details calls are complete. Basically this occurs on slow networks or with hyper caffeinated users and could lead to information that is out of sync being displayed on the screen.
+One coding practice I see in many projects, often spearheaded by (NgRx)[https://ngrx.github.io/], is to wrap your call with a chain of Observables. One advantage is, for example,  using the `switchMap` operator which allows you to cancel requests that haven't returned yet. A good example where this is useful is a case when having multiple calls where, when you select a master record some details information is retrieved remotely. Due to the asynchronous nature of the calls, there is no guarantee that the calls return in the same order you service issues them.  If you don't cancel the detail calls in that scenario and a  hyper-caffeinated user selects many master records before even the first details information returns your data will most likely be out of sync and show the wrong detail information. Canceling previous detail calls when new a new master call is issued ensures that the master and detail information stays in sync.
 
-TODO: add link to NgRx.
+In this last example, the service uses a `rxjs/Subject` to which a component can subscribe. This subscription stays open until you unsubscribe from it, you can use this subscription to trigger multiple request. Each request will close, but not this subscription.
 
-This is the last example, so please bear with me. This time the service uses an `rxjs/Subject` to which a component can subscribe. This subscription doesn't close, the component should unsubscribe in it's ngDestroy method.
+To allow canceling previous requests, we define the `setupGetRequestSubject` method that returns a Subject with the switchMap operator applied. As the documentation of `switchMap` mentions,  this operator can cancel in-flight network requests! Think of it as "switching to a new observable.".  Exactly what you want.
 
-For this demo the service declares the following `setupGetRequestSubject`. I agree naming could be better.
 
 ```TypeScript
+  private getRequestSubject: Subject<String> = new Subject<String>();
+
   setupGetRequestSubject(): Observable<any> {
     return this.getRequestSubject.switchMap(id => this.get(id)).share();
   }
@@ -388,9 +382,9 @@ So we have one active observable that is triggered every time the `getViaSubject
   }
 ```
 
-That Subject is long lived and triggers itself the `http.get` calls which are short lived. The advantage is now we can wrap the call with `switchMap` and ensuring that if we have multiple calls in sequence only the last one actually is taken into account.
+That Subject is long-lived and triggers itself the `http.get` calls which are short-lived. The advantage is now we can wrap the HTTP calls with `switchMap` and ensuring that if we have multiple calls in sequence, only the last one is taken into account.
 
-In the test below we show that two calls can be issued before a response comes back, and the second call one cancels the first one. Although the call is cancelled our subscription is still alive and we can issue further calls.
+In the test below you can test that this actually works. So you issue two calls before a response comes back, and the second call one cancels the first one. Check, that worked. Although the call is canceled our subscription is still alive, and we can issue further calls.
 
 ```TypeScript
       let counter = 2;
@@ -414,25 +408,16 @@ In the test below we show that two calls can be issued before a response comes b
       backend.verify();
 ```
 
-I feel this example was a bit convoluted, but hopefully it shows how you can use Angular's awesome testing framework to explore how your application issues requests and uses Observables. This can be tricky to get right sometimes and the `@angular/common/http/testing` library is your indispensable friend in this scenario.
-
-TODO: indispensable <- check english equivalent
-
-# verify?
-
-By now you guessed it... we use `backend.verify()` to make sure they are no calls we missed.
+I agree this example was a bit convoluted, but hopefully, it shows how you can use Angular's excellent testing framework to explore how your application issues requests and uses Observables. The `@angular/common/http/testing` library is your indispensable friend in this scenario.
 
 # Further reading:
 
-* The Angular spec describing the `HttpClient` behavior is a good read for understanding all the aspects of the HttpClient class. Might be good material for an article?  https://github.com/angular/angular/blob/master/packages/common/http/test/client_spec.ts#L19
+* The Angular spec describing the `HttpClient` behavior is a good read for understanding all the aspects of the HttpClient class. Might be good material for an article. https://github.com/angular/angular/blob/master/packages/common/http/test/client_spec.ts#L19
 
-
-* This code can be found on Github
+* This code shown in this article can be found on Github
  [https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32)
 
-
-
-Enjoy!
+I hope you enjoyed this article. See you at ng-conf!
 
 Daniel
 
@@ -440,4 +425,6 @@ Daniel
 PS:
 
 * Please reach out on twitter @danielwanja or by email daniel@angularity.io
-* I'm sure I missed something obvious in this article, so please let me know so I can improve it.
+* I'm sure I missed something obvious in this article, so please let me know how I can improve it.
+
+v0.12
