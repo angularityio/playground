@@ -9,8 +9,8 @@ module.exports = function (wallaby) {
 
   var webpackPostprocessor = wallabyWebpack({
     entryPatterns: [
-      'apps/example-001-httpclient-testing/src/wallabyTest.js',
-      'apps/example-001-httpclient-testing/src/**/*spec.js'
+      'apps/**/src/wallabyTest.js',
+      'apps/**/src/**/*spec.js'
     ],
 
     module: {
@@ -63,7 +63,7 @@ module.exports = function (wallaby) {
     ],
 
     tests: [
-      {pattern: 'apps/example-001-httpclient-testing/src/**/*spec.ts', load: false}
+      {pattern: 'apps/**/src/**/*spec.ts', load: false}
     ],
 
     testFramework: 'jasmine',
