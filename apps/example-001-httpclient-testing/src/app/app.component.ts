@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatTableDataSource } from '@angular/material';
-import { PostsServiceService } from './posts-service.service';
+import { BlogPostsService } from './blog-posts.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private postsService: PostsServiceService
+    private postsService: BlogPostsService
   ) {
     this.form = formBuilder.group({
       id: [null],

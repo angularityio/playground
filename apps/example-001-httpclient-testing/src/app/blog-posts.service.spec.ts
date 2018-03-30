@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { PostsServiceService } from './posts-service.service';
+import { BlogPostsService } from './blog-posts.service';
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { environment } from '../environments/environment';
 import { HttpHeaders, HttpRequest } from '@angular/common/http';
@@ -9,13 +9,13 @@ import { HttpHeaders, HttpRequest } from '@angular/common/http';
  * This test suite show several aspects of using the HttpTestingController I will
  * write about in a blog post.
  */
-describe('PostsServiceService', () => {
-  let service: PostsServiceService;
+describe('BlogPostsService', () => {
+  let service: BlogPostsService;
   let backend: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [PostsServiceService],
+      providers: [BlogPostsService],
       imports: [
         HttpClientTestingModule
       ]
@@ -23,7 +23,7 @@ describe('PostsServiceService', () => {
   });
 
   beforeEach(() => {
-    service = TestBed.get(PostsServiceService);
+    service = TestBed.get(BlogPostsService);
     backend = TestBed.get(HttpTestingController);
   });
 

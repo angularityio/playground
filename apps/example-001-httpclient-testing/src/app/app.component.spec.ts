@@ -14,7 +14,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MomentModule } from 'angular2-moment';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { PostsServiceService } from './posts-service.service';
+import { BlogPostsService } from './blog-posts.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -39,7 +39,7 @@ describe('AppComponent', () => {
           HttpClientTestingModule
         ],
         providers: [
-          PostsServiceService
+          BlogPostsService
         ]
       }).compileComponents();
     })

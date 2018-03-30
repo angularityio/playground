@@ -9,14 +9,14 @@ The new `HttpTestingController` class that comes with the `@angular/common/http/
 
 I this article we will explore the usage of these methods showing you how you can test your services and components with great flexibility.
 
-You can find all the examples on [Github](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32).
+You can find all the examples on [Github](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/blog-posts.service.spec.ts#L32).
 
 
 ## What are we testing?
 
 Whether you use a service from a component or you are building out your remote service layer you want to make sure of two things. First that the correct requests are issues, secondly that you service or component behaves correctly based on a variety of responses. With the `HttpTestingController` it is quite easy... let's check it out.
 
-So in this example, we are testing the `PostsServiceService` class which is a simple RESTful client allowing to list, create, update and delete blog posts. So basically issuing the following requests:
+So in this example, we are testing the `BlogPostsService` class which is a simple RESTful client allowing to list, create, update and delete blog posts. So basically issuing the following requests:
 
 ```
   Prefix Verb   URI Pattern              Controller#Action
@@ -27,7 +27,7 @@ So in this example, we are testing the `PostsServiceService` class which is a si
         DELETE /posts/:id(.:format)      posts#destroy
 ```
 
-You can view the code of the PostService class  [here](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.ts#L22)
+You can view the code of the PostService class  [here](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/blog-posts.service.ts#L22)
 
 It uses Angular's new `common/http/HttpClient`. Let's look at one of the methods the service implements; the others follow a similar pattern.
 
@@ -35,7 +35,7 @@ It uses Angular's new `common/http/HttpClient`. Let's look at one of the methods
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
-export class PostsServiceService {
+export class BlogPostsService {
   private getRequestSubject: Subject<String> = new Subject<String>();
 
   constructor(private http: HttpClient) { }
@@ -48,7 +48,7 @@ export class PostsServiceService {
 }
 ```
 
-To retrieve a specific blog post, we issue a `get` request then map the response to convert some dates. Notice we don't call `subscribe` here so the class that uses the `PostsServiceService` can control when the call is triggered, and furthermore can chain other `RxJS` operators as needed.
+To retrieve a specific blog post, we issue a `get` request then map the response to convert some dates. Notice we don't call `subscribe` here so the class that uses the `BlogPostsService` can control when the call is triggered, and furthermore can chain other `RxJS` operators as needed.
 
 So let's check how we can test this service.
 
@@ -106,13 +106,13 @@ You just need to import the `HttpClientTestingModule` and provide `HttpTestingCo
 
 
 ```TypeScript
-describe('PostsServiceService', () => {
-  let service: PostsServiceService;
+describe('BlogPostsService', () => {
+  let service: BlogPostsService;
   let backend: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [PostsServiceService],
+      providers: [BlogPostsService],
       imports: [
         HttpClientTestingModule
       ]
@@ -120,7 +120,7 @@ describe('PostsServiceService', () => {
   });
 
   beforeEach(() => {
-    service = TestBed.get(PostsServiceService);
+    service = TestBed.get(BlogPostsService);
     backend = TestBed.get(HttpTestingController);
   });
 
@@ -415,7 +415,7 @@ I agree this example was a bit convoluted, but hopefully, it shows how you can u
 * The Angular spec describing the `HttpClient` behavior is a good read for understanding all the aspects of the HttpClient class. Might be good material for an article. https://github.com/angular/angular/blob/master/packages/common/http/test/client_spec.ts#L19
 
 * This code shown in this article can be found on Github
- [https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/posts-service.service.spec.ts#L32)
+ [https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/blog-posts.service.spec.ts](https://github.com/angularityio/playground/blob/master/apps/example-001-httpclient-testing/src/app/blog-posts.service.spec.ts#L32)
 
 I hope you enjoyed this article. See you at ng-conf!
 

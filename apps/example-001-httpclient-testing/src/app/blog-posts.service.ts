@@ -12,7 +12,7 @@ import 'rxjs/add/observable/of';
 // import { switchMap, map } from 'rxjs/operators';
 
 @Injectable()
-export class PostsServiceService {
+export class BlogPostsService {
   private getRequestSubject: Subject<String> = new Subject<String>();
 
   constructor(private http: HttpClient) {
