@@ -5,10 +5,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start2": "ng serve --app example-002-svg-component",
     "build": "ng build",
     "build:1": "ng build --base-href . --app hello-world",
     "build:2": "ng build --base-href . --app hello-world2",
     "build:3": "ng build --base-href . --app example-001-httpclient-testing",
+    "build:3": "ng build --base-href . --app example-002-svg-component",
     "build:ci": "npm run build:1 && npm run build:2 && npm run build:3 && cp index.html dist",
     "test1": "ng test --app hello-world --watch false --code-coverage",
     "test2": "ng test --app hello-world2 --watch false --code-coverage",

@@ -38,9 +38,7 @@ describe('AppComponent', () => {
           ReactiveFormsModule,
           HttpClientTestingModule
         ],
-        providers: [
-          BlogPostsService
-        ]
+        providers: [BlogPostsService]
       }).compileComponents();
     })
   );
@@ -53,37 +51,63 @@ describe('AppComponent', () => {
   });
 
   it('should create', () => {
-    backend.verify
+    backend.verify;
     expect(component).toBeTruthy();
   });
 
   it('should load list and select first component', () => {
-    backend.expectOne(`https://rails-rest.herokuapp.com/posts`)
-      .flush([{
-        'id': 1,
-        'title': 'Testing HttpClient',
-        'content': 'A long description...',
-        'created_at': '2017-12-07T04:39:49.447Z',
-        'updated_at': '2017-12-07T04:39:49.447Z'
+    backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush([
+      {
+        id: 1,
+        title: 'Testing HttpClient',
+        content: 'A long description...',
+        created_at: '2017-12-07T04:39:49.447Z',
+        updated_at: '2017-12-07T04:39:49.447Z'
       },
       {
-        'id': 2,
-        'title': 'Testing Components',
-        'content': 'Another long description...',
-        'created_at': '2017-12-07T04:39:49.447Z',
-        'updated_at': '2017-12-07T04:39:49.447Z'
-      }]);
+        id: 2,
+        title: 'Testing Components',
+        content: 'Another long description...',
+        created_at: '2017-12-07T04:39:49.447Z',
+        updated_at: '2017-12-07T04:39:49.447Z'
+      }
+    ]);
     expect(component.dataSource.data.length).toEqual(2);
     expect(component.dataSource.data[1].id).toEqual(2);
     expect(component.selectedRecord.id).toEqual(2);
-    backend.verify()
+    backend.verify();
   });
 
   it('should select empty record when list is empty', () => {
     backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush([]);
     expect(component.dataSource.data.length).toEqual(0);
     expect(component.selectedRecord.id).toBeNull();
-    backend.verify()
+    backend.verify();
   });
 
+  it('should delete post', () => {
+    backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush([
+      {
+        id: 1,
+        title: 'Testing HttpClient',
+        content: 'A long description...',
+        created_at: '2017-12-07T04:39:49.447Z',
+        updated_at: '2017-12-07T04:39:49.447Z'
+      },
+      {
+        id: 2,
+        title: 'Testing Components',
+        content: 'Another long description...',
+        created_at: '2017-12-07T04:39:49.447Z',
+        updated_at: '2017-12-07T04:39:49.447Z'
+      }
+    ]);
+
+    component.deleteRecord();
+    const call = backend.expectOne(`https://rails-rest.herokuapp.com/posts/2.json`);
+    expect(call.request.method).toEqual('DELETE');
+    call.flush({});
+    backend.expectOne(`https://rails-rest.herokuapp.com/posts`).flush([]);
+    backend.verify();
+  });
 });

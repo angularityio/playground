@@ -15,10 +15,7 @@ export class AppComponent implements OnInit {
   selectedRecord: Post;
   form: FormGroup;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private postsService: BlogPostsService
-  ) {
+  constructor(private formBuilder: FormBuilder, private postsService: BlogPostsService) {
     this.form = formBuilder.group({
       id: [null],
       title: [null],
@@ -32,22 +29,22 @@ export class AppComponent implements OnInit {
   }
 
   loadList() {
-    this.postsService.getAll().subscribe((posts) => {
+    this.postsService.getAll().subscribe(posts => {
       this.dataSource = new MatTableDataSource<Post>(posts);
       if (posts.length) {
-        this.selectRecord(posts[posts.length-1]);
-       } else {
+        this.selectRecord(posts[posts.length - 1]);
+      } else {
         this.newRecord();
       }
     });
   }
 
   newRecord() {
-    this.selectRecord({id: null, title: null, content: null, created_at: new Date(), updated_at: null});
+    this.selectRecord({ id: null, title: null, content: null, created_at: new Date(), updated_at: null });
   }
 
   saveRecord() {
-    this.postsService.save(this.form.value).subscribe((savedRecord) => {
+    this.postsService.save(this.form.value).subscribe(savedRecord => {
       this.selectRecord(savedRecord);
       this.loadList();
     });
