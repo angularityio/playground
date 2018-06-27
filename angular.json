@@ -2,12 +2,132 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "",
-  "projects": {},
+  "projects": {
+    "main-site": {
+      "root": "apps/main-site/",
+      "sourceRoot": "apps/main-site/src",
+      "projectType": "application",
+      "prefix": "playground",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/main-site",
+            "index": "apps/main-site/src/index.html",
+            "main": "apps/main-site/src/main.ts",
+            "polyfills": "apps/main-site/src/polyfills.ts",
+            "tsConfig": "apps/main-site/tsconfig.app.json",
+            "assets": [
+              "apps/main-site/src/favicon.ico",
+              "apps/main-site/src/assets"
+            ],
+            "styles": [
+              "apps/main-site/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/main-site/src/environments/environment.ts",
+                  "with": "apps/main-site/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "main-site:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "main-site:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "main-site:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/main-site/src/test.ts",
+            "polyfills": "apps/main-site/src/polyfills.ts",
+            "tsConfig": "apps/main-site/tsconfig.spec.json",
+            "karmaConfig": "apps/main-site/karma.conf.js",
+            "styles": [
+              "apps/main-site/src/styles.scss"
+            ],
+            "scripts": [],
+            "assets": [
+              "apps/main-site/src/favicon.ico",
+              "apps/main-site/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/main-site/tsconfig.app.json",
+              "apps/main-site/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "main-site-e2e": {
+      "root": "apps/main-site-e2e/",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "apps/main-site-e2e/protractor.conf.js",
+            "devServerTarget": "main-site:serve"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "apps/main-site-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "warnings": {
       "typescriptMismatch": false,
       "versionMismatch": false
     },
     "defaultCollection": "@nrwl/schematics"
-  }
+  },
+  "defaultProject": "main-site"
 }
