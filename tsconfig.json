@@ -16,9 +16,6 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@playground/*": [
-        "libs/*"
-      ]
     }
   },
   "exclude": [
