@@ -13,6 +13,15 @@
     },
     "main-site-e2e": {
       "tags": []
+    },
+    "example-httpclient-testing": {
+      "tags": []
+    },
+    "example-httpclient-testing-e2e": {
+      "tags": []
+    },
+    "app-example-httpclient-testing": {
+      "tags": []
     }
   }
 }

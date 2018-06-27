@@ -120,6 +120,152 @@
           }
         }
       }
+    },
+    "example-httpclient-testing": {
+      "root": "apps/example-httpclient-testing/",
+      "sourceRoot": "apps/example-httpclient-testing/src",
+      "projectType": "application",
+      "prefix": "playground",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/example-httpclient-testing",
+            "index": "apps/example-httpclient-testing/src/index.html",
+            "main": "apps/example-httpclient-testing/src/main.ts",
+            "polyfills": "apps/example-httpclient-testing/src/polyfills.ts",
+            "tsConfig": "apps/example-httpclient-testing/tsconfig.app.json",
+            "assets": [
+              "apps/example-httpclient-testing/src/favicon.ico",
+              "apps/example-httpclient-testing/src/assets"
+            ],
+            "styles": [
+              "apps/example-httpclient-testing/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/example-httpclient-testing/src/environments/environment.ts",
+                  "with": "apps/example-httpclient-testing/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "example-httpclient-testing:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "example-httpclient-testing:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "example-httpclient-testing:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/example-httpclient-testing/src/test.ts",
+            "polyfills": "apps/example-httpclient-testing/src/polyfills.ts",
+            "tsConfig": "apps/example-httpclient-testing/tsconfig.spec.json",
+            "karmaConfig": "apps/example-httpclient-testing/karma.conf.js",
+            "styles": [
+              "apps/example-httpclient-testing/src/styles.scss"
+            ],
+            "scripts": [],
+            "assets": [
+              "apps/example-httpclient-testing/src/favicon.ico",
+              "apps/example-httpclient-testing/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/example-httpclient-testing/tsconfig.app.json",
+              "apps/example-httpclient-testing/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "example-httpclient-testing-e2e": {
+      "root": "apps/example-httpclient-testing-e2e/",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "apps/example-httpclient-testing-e2e/protractor.conf.js",
+            "devServerTarget": "example-httpclient-testing:serve"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "apps/example-httpclient-testing-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "app-example-httpclient-testing": {
+      "root": "libs/app/example-httpclient-testing",
+      "sourceRoot": "libs/app/example-httpclient-testing/src",
+      "projectType": "library",
+      "prefix": "playground",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/app/example-httpclient-testing/src/test.ts",
+            "tsConfig": "libs/app/example-httpclient-testing/tsconfig.spec.json",
+            "karmaConfig": "libs/app/example-httpclient-testing/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/app/example-httpclient-testing/tsconfig.lib.json",
+              "libs/app/example-httpclient-testing/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {
