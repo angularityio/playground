@@ -6,10 +6,25 @@ I'm also taking the opportunity to learn more about using a mono repo to host al
 
 Nwrl/Nx
 
-## Created the repo
+## Created the workspace
 
 ```
-curl -fsSL https://raw.githubusercontent.com/nrwl/nx/master/packages/install/install.sh | bash -s myproject
+$ create-nx-workspace playground --yarn
+
+```
+
+## Create shared services
+
+```
+ng g lib services --ngModule
+```
+
+Note here we just declare services without having a module at this stage.
+
+Create EnvironmentService to allow apps to define environment and libs to use them.
+
+```
+ng g service Environment --project services
 ```
 
 ## Created first app
@@ -18,6 +33,7 @@ curl -fsSL https://raw.githubusercontent.com/nrwl/nx/master/packages/install/ins
 ng g app hello-world
 ```
 
+EnvironmentService
 
 ## Deploy using aerobatic
 

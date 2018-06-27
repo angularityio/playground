@@ -22,6 +22,9 @@
     },
     "app-example-httpclient-testing": {
       "tags": []
+    },
+    "services": {
+      "tags": []
     }
   }
 }

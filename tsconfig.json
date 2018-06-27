@@ -18,6 +18,9 @@
     "paths": {
       "@playground/app/example-httpclient-testing": [
         "libs/app/example-httpclient-testing/src/index.ts"
+      ],
+      "@playground/services": [
+        "libs/services/src/index.ts"
       ]
     }
   },
