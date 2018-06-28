@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { NxModule } from '@nrwl/nx';
 import { EnvironmentService } from 'libs/services/src/lib/environment.service';
 import { environment } from '../environments/environment';
+import { AppExampleHttpclientTestingModule } from '@playground/app/example-httpclient-testing';
 
 export function environmentServiceFactory(
   environment: any
@@ -14,7 +15,11 @@ export function environmentServiceFactory(
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, NxModule.forRoot()],
+  imports: [
+    BrowserModule,
+    NxModule.forRoot(),
+    AppExampleHttpclientTestingModule
+  ],
   providers: [
     {
       provide: EnvironmentService,

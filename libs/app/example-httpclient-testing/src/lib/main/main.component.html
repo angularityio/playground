@@ -1,3 +1,68 @@
-<p>
-  main works!
-</p>
+<mat-toolbar color="primary">
+  <span>example-01-httpclient-testing</span>
+</mat-toolbar>
+
+<div class="example-container mat-elevation-z8">
+  <mat-table #table [dataSource]="dataSource">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef> Id. </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{post.id}} </mat-cell>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{post.title}} </mat-cell>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="content">
+      <mat-header-cell *matHeaderCellDef> Content </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{post.content}} </mat-cell>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="updated_at">
+      <mat-header-cell *matHeaderCellDef> Created/ Updated </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{post.updated_at | amTimeAgo}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"
+      [ngClass]="{'highlight': selectedRecord == row}"
+      (click)="selectRecord(row)"
+    ></mat-row>
+  </mat-table>
+</div>
+
+<div class="form-example-container">
+  <mat-card>
+      <mat-card-title>
+          {{ selectedRecord.id || 'New' }}. {{ form.get('title').value }}
+      </mat-card-title>
+
+    <mat-card-content>
+      <form [formGroup]="form">
+
+        <mat-form-field>
+          <input formControlName="title" matInput placeholder="Title">
+        </mat-form-field>
+
+        <mat-form-field>
+          <textarea formControlName="content" matInput placeholder="Content"></textarea>
+        </mat-form-field>
+
+        <br/>
+        <button mat-raised-button color="accent" (click)="newRecord()">New</button>
+        <button mat-raised-button color="accent" (click)="saveRecord()">Save</button>
+        or <a (click)="deleteRecord()">Delete</a>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,10 +1,20 @@
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { AppExampleHttpclientTestingModule } from '@playground/app/example-httpclient-testing';
+import { EnvironmentService } from '@playground/services';
+import { environment } from '../environments/environment';
 describe('AppComponent', () => {
   beforeEach(
     async(() => {
       TestBed.configureTestingModule({
-        declarations: [AppComponent]
+        declarations: [AppComponent],
+        imports: [AppExampleHttpclientTestingModule],
+        providers: [
+          {
+            provide: EnvironmentService,
+            useValue: new EnvironmentService(environment)
+          }
+        ]
       }).compileComponents();
     })
   );
@@ -14,25 +24,6 @@ describe('AppComponent', () => {
       const fixture = TestBed.createComponent(AppComponent);
       const app = fixture.debugElement.componentInstance;
       expect(app).toBeTruthy();
-    })
-  );
-  it(
-    `should have as title 'playground'`,
-    async(() => {
-      const fixture = TestBed.createComponent(AppComponent);
-      const app = fixture.debugElement.componentInstance;
-      expect(app.title).toEqual('playground');
-    })
-  );
-  it(
-    'should render title in a h1 tag',
-    async(() => {
-      const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
-      const compiled = fixture.debugElement.nativeElement;
-      expect(compiled.querySelector('h1').textContent).toContain(
-        'Welcome to playground!'
-      );
     })
   );
 });

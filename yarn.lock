@@ -116,9 +116,9 @@
     "@angular-devkit/core" "0.6.1"
     rxjs "^6.0.0"
 
-"@angular/animations@^6.0.6":
-  version "6.0.6"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-6.0.6.tgz#90a6e5acd693d2860017cdf83ec7fcd5daa74717"
+"@angular/animations@6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-6.0.1.tgz#21fd5b059765b48c9823e05cfe470ccdd816e8b1"
   dependencies:
     tslib "^1.9.0"
 
@@ -4612,6 +4612,12 @@ ngrx-store-freeze@0.2.2:
   resolved "https://registry.yarnpkg.com/ngrx-store-freeze/-/ngrx-store-freeze-0.2.2.tgz#fbc1f50dbee8f5a63a34aa589abeb422d68f7fc5"
   dependencies:
     deep-freeze-strict "^1.1.1"
+
+ngx-moment@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/ngx-moment/-/ngx-moment-3.0.1.tgz#e90f7bce155c3d7380cb0c4f6075bd61d486c9d4"
+  dependencies:
+    tslib "^1.9.0"
 
 no-case@^2.2.0:
   version "2.3.2"
